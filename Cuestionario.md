@@ -11,6 +11,7 @@ En general podriamos describir los perfiles como sigue:
 La figura 1, muestra los perfiles de ARM.
 
 ***Figura 1.*** Perfiles de ARM
+
 [![ARM-perfiles.png](https://i.postimg.cc/ZnLbn9Dr/ARM-perfiles.png)](https://postimg.cc/zHVZPfNB)
 
 Cortex M
@@ -34,6 +35,7 @@ Tabla 1. Diferencias entre Cortex M0, M3 y M4
 En cuanto al set de instrucciones del ***Cortex M0***, tienen un set de instrucciones reducido soportando 56 instrucciones y en su mayoría de 16 bits. Por otra parte, los ***Cortex-M3*** soportan más de 100 instrucciones y los ***Cortex-M4*** además tienen instrucciones de DSP y opcionalmente de punto flotante. La figura 2, muestra el core para cada Cortex.
 
 ***Figura 2.*** Core de procesadores ARM Cortex M0, M3 y M4
+
 [![Core-ARM-Cortex-M0-M3-M4.jpg](https://i.postimg.cc/nLq1XppH/Core-ARM-Cortex-M0-M3-M4.jpg)](https://postimg.cc/7CYzcv5c)
 
 2. ¿Por qué se dice que el set de instrucciones Thumb permite mayor densidad de código? Explique
@@ -48,6 +50,7 @@ La arquitectura *load-store* o de carga-almacenamiento, hace referencia a que el
 El mapa de memoria se puede describir como un arreglo lineal de bytes numerados desde cero hasta 2<sup>32</sup>-1, haciendo un total de 4GB de almacenamiento. Las palabras están siempre alineadas en bloques de 4 bytes(32 bits), por lo tanto, los 2 bits LSB son cero para mantener la alineación. En algunos procesadores se soporta el acceso no alineado y en otros casos se genera un fallo cuando se produce un acceso no alineado. La Figura 3, describe como se distribuye la memoria para el programa, datos y periféricos.
 
 ***Figura 3.*** Mapa de memoria ARM Cortex M3/M4
+
 [![mapa-memoria.png](https://i.postimg.cc/wTnnvr3c/mapa-memoria.png)](https://postimg.cc/ykXLpvmk)
 
 5. ¿Qué ventajas presenta el uso de los “shadowed pointers” del PSP y el MSP?
@@ -56,6 +59,7 @@ El uso del ***Processor Stack Pointer*** (PSP) y el ***Main Stack Pointer*** (MS
 Cada tarea de aplicación tiene su propio espacio de pila como se muestra en la Figura 4, y el código de cambio de contexto en el OS actualiza la PSP cada vez que se cambia de contexto.
 
 ***Figura 4.*** Asignación del stack para cada tarea
+
 [![PSP-stack-OS.jpg](https://i.postimg.cc/j2fYyRzs/PSP-stack-OS.jpg)](https://postimg.cc/SYmPhFT5)
 
 6. Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no priviligiado y nuevamente a privilegiado.
@@ -93,6 +97,7 @@ de una función. Adicional a estos registros esta el registro de estado xPSR (Pr
 La Figura 5, muestra el significado de cada bit del registro xPSR.
 
 ***Figura 5.*** Registros de procesador ARM Cortex M
+
 [![registros-arm-cortex.png](https://i.postimg.cc/VN32W344/registros-arm-cortex.png)](https://postimg.cc/Y4zXpD5m)
 
 Ejemplo: **MOV** PC, #0 ; R15 = 0, salta a la posición 0x00
@@ -111,7 +116,8 @@ Ejemplo: **MOV** PC, #0 ; R15 = 0, salta a la posición 0x00
 Es un temporizador de proposito general presente en todos los procesadores Cortex que opera en modo descendente con una opcion de auto recarga tal cual se muestra en la FIgura 6. Cuenta con una resolución de 24 bits y por defecto la fuente de reloj utilizada por el Systick es el clock de la CPU utilizada por el procesador. 
 
 ***Figura 6.*** Temporizador Systick
-[![Systick.jpg](https://i.postimg.cc/DfSwFYCg/Systick.jpg)](https://postimg.cc/23fD7TNb)
+
+[![systick.png](https://i.postimg.cc/wjCj1xnj/systick.png)](https://postimg.cc/mPSsq4bv)
 
 Una vez iniciado el temporizador con cada clock descuenta en 1 desde su valor inicial, una vez que llegue a cero genera una interrupción y se cargará un nuevo valor de cuenta desde el registro de recarga. El propósito principal de este temporizador es generar una interrupción periódica para un sistema operativo en tiempo real (RTOS) para la llamada al sheduler o algún otro software manejado por eventos. En caso no se ejecute un RTOS, también se utilizar como un simple periférico de temporizador.
 
