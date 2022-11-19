@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "string.h"
-
+#include "stddef.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "asm_func.h"
@@ -32,6 +32,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MASK_12BITS		0x1000
+#define VALUE_12BITS	0x0FFF
+#define SHIFT_12BITS		12
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -61,7 +64,104 @@ static void MX_GPIO_Init(void);
 static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
+static void zeros (uint32_t * vector, uint32_t longitud);
+static void productoEscalar32 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longitud, uint32_t escalar);
+static void productoEscalar16 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
+static void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
 /* USER CODE BEGIN PFP */
+/*
+ * @brief	Initializes a vector with zero values
+ * @param	Pointer to vector of type uint32_t
+ * @param	Vector length
+ * @retval	None
+ * */
+void zeros (uint32_t *vectorIn, uint32_t longitud)
+{
+	uint32_t i;
+
+	if(NULL != vectorIn && longitud > 0)	/** check parameters*/
+		for(i=0;i<longitud;i++)		/** alternative option: memset(&vectorIn,0,longitud) */
+			*vectorIn++ = 0;
+	else
+		Error_Handler();
+}
+
+/*
+ * @brief	Implements the product of a vector and a scalar
+ * @param	Pointer to input vector of type uint32_t
+ * @param	Pointer to output vector of type uint32_t
+ * @param	Vector length
+ * @param	Scalar value
+ * @retval	None
+ * */
+static void productoEscalar32 (uint32_t *vectorIn, uint32_t *vectorOut, uint32_t longitud, uint32_t escalar)
+{
+	uint32_t i;
+
+	if(NULL != vectorIn && vectorOut != NULL && longitud > 0)/** check parameters*/
+	{
+		if(escalar != 0)
+			for(i=0;i<longitud;i++)
+				*vectorOut++ = *vectorIn++ * escalar;
+		else
+			memset(&vectorOut,0,longitud);
+	}
+	else
+		Error_Handler();
+}
+
+/*
+ * @brief	Implements the product of a vector and a scalar limited to 16 bits
+ * @param	Pointer to input vector of type uint16_t
+ * @param	Pointer to output vector of type uint16_t
+ * @param	Vector length
+ * @param	Scalar value
+ * @retval	None
+ * */
+static void productoEscalar16 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar)
+{
+	uint32_t i;
+
+		if(NULL != vectorIn && vectorOut != NULL && longitud > 0)/** check parameters*/
+		{
+			if(escalar != 0)
+				for(i=0;i<longitud;i++)
+					*vectorOut++ = *vectorIn++ * escalar;
+			else
+				memset(&vectorOut,0,longitud);
+		}
+		else
+			Error_Handler();
+
+}
+
+/*
+ * @brief	Implements the product of a vector and a scalar limited to 12 bits
+ * @param	Pointer to input vector of type uint16_t
+ * @param	Pointer to output vector of type uint16_t
+ * @param	Vector length
+ * @param	Scalar value
+ * @retval	None
+ * */
+static void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar)
+{
+	uint32_t i;
+
+			if(NULL != vectorIn && vectorOut != NULL && longitud > 0)/** check parameters*/
+			{
+				if(escalar != 0)
+					for(i=0;i<longitud;i++)
+					{
+						*vectorOut++ = *vectorIn++ * escalar;
+						if((*vectorOut & MASK_12BITS)>>SHIFT_12BITS)
+							*vectorOut = VALUE_12BITS;
+					}
+				else
+					memset(&vectorOut,0,longitud);
+			}
+			else
+				Error_Handler();
+}
 
 /* USER CODE END PFP */
 
