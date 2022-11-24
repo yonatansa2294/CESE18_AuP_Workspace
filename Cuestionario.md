@@ -103,9 +103,41 @@ La Figura 5, muestra el significado de cada bit del registro xPSR.
 Ejemplo: **MOV** PC, #0 ; R15 = 0, salta a la posición 0x00
 
 8. ¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo
+Además de los saltos condicionales, los procesadores  Cortex-M3 y Cortex-M4, permiten colocar las instrucciones condicionales en un bloque de instrucciones IF-THEN (IT), con lo cual se pueden ejecutar hasta 4 instrucciones en bloque.
+
+Un bloque de instrucciones IT consta de una instrucción IT, con detalles de la ejecución condicional, seguida de una a cuatro instrucciones (procesamiento de datos/acceso a memoria) de ejecución condicional, las cuales pueden ejecutarse condicionalmente en función de la condición especificada por la instrucción IT y el valor APSR. 
+
+La última instrucción de ejecución condicional del bloque de IT también puede ser una instrucción de salto condicional. La declaración de la instrucción IT contiene el opcode de la instrucción IT con hasta tres sufijos opcionales de ***"T" (then)*** y ***"E" (else)*** , seguidos de la condición a comprobar, que es la misma que el símbolo de condición para los saltos condicionales.
+
+Finalmente, el sufijo "T"/"E" indica cuántas instrucciones subsiguientes hay dentro del bloque de instrucciones IT, y si deben o no ejecutarse si se cumple la condición.
+
+````
+Ejemplo:
+1 CMP R0, #1 ; Compara R0 con 1
+;ejecucion condicional
+2 ITE	EQ	   ; Ejecuta la instruccion 3 si la condicion es verdadera
+			   ; caso contrario salta a la instruccion 4 
+3 MOVEQ R3, #9 ; R3 = 9 si R0 es igual a 1 (EQ) 
+4 MOVNE R3, #5 ; R3 = 5 si R0 es diferente de 1 (NE)
+```` 
 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
+Las excepciones son eventos que ocasionan cambios en el flujo de programa. Cuando ocurre una excepcion, el procesador suspende la ejecución actual de las tareas y ejecuta otro código que se encarga de atender la excepcion, llamado manejador de excepciones. Al finalizar, el procesador retoma la ejecuciòn normal del programa.
+	* ***Reset:*** se produce cuando el procesador inicia, por un reset en caliente (durante la ejecución) o por una caida en el nivel de alimentación por debajo de un valor especificado como mínimo para el correcto funcionamiento del procesador (*brown-out reset*). 
+	* ***NMI (NonMaskable Interrupt):*** esta excepción puede ser ocasionada por un periférico o por software. Esta es la excepción de mayor prioridad despues del reset. Está permanentemente habilitado y tiene una prioridad fija de -2. Los NMI no pueden ser: 
+		* enmascarado o impedido de activación por cualquier otra excepción.
+		* reemplazada por cualquier excepción que no sea reset.
+	* ***Hardfault:*** las excepciones de fallo detectan los accesos ilegales a la memoria y el funcionamiento incorrecto del programa. Esta excepción se produce debido a un error durante el procesamiento de la excepción o porque ningún otro mecanismo de excepción puede gestionarla.
+
+La Tabla 2, presenta el nivel de prioridad de estos tres tipos de excepción. 
+	
+|Número de excepción|Número de IRQ|Tipo|Prioridad|Activación|
+|:-------------|:-:|:-:|:-:|:-:|
+|1|-|Reset|3 (mayor prioridad)|Asincrona|
+|2|-14|NMI|2|Asincrona|
+|3|-13|Hardfault|1|-|
 10. Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?
 11. Describa la secuencia de reset del microprocesador.
+Cuando se produce un reset el procesador detiene la ejecución del programa sin importar la instrucción. Al desaparecer el reset, se reinicia la ejecución en la dirección especificada por el reset en la tabla de vectores, con nivel privilegiado y modo *Thread*. 
 12. ¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?
 13. ¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo
 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
@@ -133,7 +165,47 @@ Tener en cuenta lo siguiente:
 ISA
 -------
 1. ¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo
+Los sufijos acompañan a algunas instrucciones y el efecto que tienen sobre la instruccion depende precisamente del tipo de sufijo utilizado.
+Podemos mencionar los sufijos para las instrucciones de procesamiento de datos, de acceso a memoria y las del tipo condicional.
+Para la instrucciones de acceso a memoria (***load*** y ***store***) tenemos los sufijos que indican el tamaño del dato a manipular.
+Por otro lado, para las instrucciones condicionales debemos mencionar que los procesadores Cortex-M3 y Cortex-M4 admiten los saltos condicionales. Actualizando el registro de estado **APSR** mediante operaciones de datos, o instrucciones como test (TST) o comparar (CMP), se puede controlar el flujo del programa en base al resultado de las operaciones. 
+Las Tablas 3 y 4 muestran los sufijos para las instrucciones condicionales y para las de acceso a memoria.
+
+Tabla 3. Sufijos de tamaño para instrucciones de acceso a memoria.
+
+|Tipo de dato|Sufijo|Load|Store|
+|:-------------|:-:|:-:|:-:|
+|8-bit sin signo|B|LDRB|STRB|
+|8-bit con signo|SB|LDRSB|STRB|
+|16-bit sin signo|H|LDRH|STRH|
+|16-bit con signo|SH|LDRSH|STRH|
+|32-bit|-|LDR|STR|
+|Operaciones sobre stack (32-bits)|-|PUSH|POP|
+
+Tabla 4. Sufijos para instrucciones condicionales.
+
+|Sufijo|Descripción|Flags|
+|:-------------|:-:|:-:|
+|EQ|Igual|Z=1|
+|NE|Diferente|Z=0|
+|CS o HS|Mayor o igual, sin signo|C=1|
+|GE|Mayor o igual, con signo|N=V|
+|LS|Menor o igual, sin signo|C=0 o Z=1|
+|LE|Menor o igual que, con signo|Z=1 o N$\neq$|
+|MI|Negativo|N=1|
+|PL|Positivo o cero|N=0|
+|VS|Desbordamiento (***Overflow***)|V=1|
+|VC|Sin desbordamiento (***No overflow***)|V=0|
+|HI|Mayor que, sin signo|C=1 y Z=0|
+|GT|Mayor que, con signo|Z=0 y N=v|
+|CC o LO|Menor que, sin signo|C=0|
+|LT|Menor que, con signo|N$\neq$|
+|AL|Valor por defecto|Algun valor|
+
 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo
+El sufijo *** "s"*** es utilizado por las instrucciones orientadas al procesamiento de los datos, permitiendo ademas de ejecutar la operación de la instrucción, actualizar los bits o flags del registro de estado **APSR**.
+````Ejemplo: ADDS R0, R1;  R0=(R0)+(R1) y actualiza el registro APSR ````
+
 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
 5. ¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.
