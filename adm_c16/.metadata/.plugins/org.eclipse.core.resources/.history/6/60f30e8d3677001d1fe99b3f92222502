@@ -1,0 +1,184 @@
+.syntax unified
+.thumb
+.text
+
+@ Simbolos exportados
+.global asm_svc
+.global asm_sum
+.global asm_zeros
+.global asm_productoEscalar32
+.global asm_productoEscalar16
+.global asm_productoEscalar12
+.global asm_pack32to16
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void asm_svc (void)
+@
+.thumb_func
+    asm_svc:
+        svc 0
+        bx lr
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   uint32_t asmSum (uint32_t firstOperand, uint32_t secondOperand)
+@
+@ Parametros recibidos:
+@   r0: firstOperand
+@   r1: secondOperand
+@
+@ Valor de retorno:
+@   r0: resultado de la suma de firstOperand y secondOperand
+@
+.thumb_func
+    asm_sum:
+        add r0, r1  @ r0 = r0 + r1
+        bx lr       @ vuelve adonde fue llamada (especificamente, si "pc"
+                    @ es la direccion, en el codigo del programa, de la
+                    @ instruccion "bl asm_sum" usada para saltar a
+                    @ esta funcion, entonces "lr" contiene ese "pc" + 4).
+                    @ el valor de retorno debe quedar en el registro r0.
+                    @ En este caso, r0 es el resultado de r0 + r1.
+
+        @ Otras alternativas para el retorno
+        @ mov pc,lr
+        @ bx lr
+        @ push {lr} ... pop {pc}
+
+@-----------------------------------------------------------------------------------
+@ Prototipo en "C"
+@ void zeros (uint32_t * vector, uint32_t longitud)
+@ Parametros recibidos:
+@   r0: dirección de memoria apuntando al primer elemento del vector
+@   r1: cantidad de elementos del vector (longitud)
+@
+.thumb_func					@ Se le indica al ensamblador que es una funcion
+	asm_zeros:
+		push	{r2}		@ guardo el valor de r2 en el stack
+		movs	r2,#0		@ r2 = 0
+	loop_zeros:
+		str		r2,[r0],#4	@ *r2=r0 y luego r0+=4
+		subs	r1,1		@ r1-- (decremento el numero de elementos por recorrer)
+		bne		loop_zeros	@ salta si z=1 debido a que r1=0 (se recorrio el vector)
+	exit_loop_zeros:
+		pop		{r2}		@ recupero el valor de r2
+		bx 		lr			@ retorno de la subrutina
+
+@-------------------------------------------------------------------------------------------------------------------
+@ Prototipo en "C"
+@ static void productoEscalar32 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longitud, uint32_t escalar)
+@ Parametros recibidos:
+@   r0: dirección de memoria apuntando al primer elemento del vector de entrada
+@   r1: r0: dirección de memoria apuntando al primer elemento del vector de salida
+@	r2: cantidad de elementos del vector (longitud)
+@	r3: escalar
+@
+.thumb_func					@ Se le indica al ensamblador que es una funcion
+	asm_productoEscalar32:
+		push	{r4}		@ guardo el valor de r4 en el stack
+		movs	r4,#0		@ r4 = 0
+	loop_prod32:
+		ldr		r4,[r0],#4	@ r4=*r0 y luego r0+=4
+		muls	r4,r3		@ r4*=r3
+		str		r4,[r1],#4	@ *r4=r1 y luego r1+=4
+		subs	r2,1		@ r2-- (decremento el numero de elementos por recorrer)
+		bne		loop_prod32	@ salta si z=1 debido a que r1=0 (se recorrio el vector)
+	exit_loop_prod32:
+		pop		{r4}		@ recupero el valor de r4
+		bx 		lr			@ retorno de la subrutina
+
+@-------------------------------------------------------------------------------------------------------------------
+
+@ Prototipo en "C"
+@ static void productoEscalar16 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint32_t escalar)
+@ Parametros recibidos:
+@   r0: dirección de memoria apuntando al primer elemento del vector de entrada
+@   r1: r0: dirección de memoria apuntando al primer elemento del vector de salida
+@	r2: cantidad de elementos del vector (longitud)
+@	r3: escalar
+@
+.thumb_func					@ Se le indica al ensamblador que es una funcion
+	asm_productoEscalar16:
+		push	{r4}		@ guardo el valor de r4 en el stack
+		movs	r4,#0		@ r4 = 0
+	loop_prod16:
+		ldrh	r4,[r0],#2	@ r4=(*r0) y luego r0+=2
+		muls	r4,r3		@ r4*=r3
+		strh	r4,[r1],#2	@ (*r4)=r1 y luego r1+=2
+		subs	r2,1		@ r2-- (decremento el numero de elementos por recorrer)
+		bne		loop_prod16	@ salta si z=1 debido a que r1=0 (se recorrio el vector)
+	exit_loop_prod16:
+		pop		{r4}		@ recupero el valor de r4
+		bx 		lr			@ retorno de la subrutina
+
+@-------------------------------------------------------------------------------------------------------------------
+
+@ Prototipo en "C"
+@ static void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint32_t escalar)
+@ Parametros recibidos:
+@   r0: dirección de memoria apuntando al primer elemento del vector de entrada
+@   r1: dirección de memoria apuntando al primer elemento del vector de salida
+@	r2: cantidad de elementos del vector (longitud)
+@	r3: escalar
+@
+.thumb_func						@ Se le indica al ensamblador que es una funcion
+	asm_productoEscalar12:
+		push	{r4}			@ guardo el valor de r4 en el stack
+		movs	r4,#0			@ r4 = 0
+	loop_prod12:
+		ldrh	r4,[r0],#2		@ r4=(*r0) y luego r0+=2
+		muls	r4,r3			@ r4*=r3
+		usat	r4,#12,r4		@ saturamos el valor de r4 y lo guardamos en el mismo registro
+		strh	r4,[r1],#2		@ (*r4)=r1 y luego r1+=2
+		subs	r2,1			@ r2-- (decremento el numero de elementos por recorrer)
+		bne		loop_prod12		@ salta si z=1 debido a que r1=0 (se recorrio el vector)
+	exit_loop_prod12:
+		pop		{r4}			@ recupero el valor de r4
+		bx 		lr				@ retorno de la subrutina
+
+@ opcion sin aritmetica saturada
+@.thumb_func						@ Se le indica al ensamblador que es una funcion
+@	asm_productoEscalar12:
+@		push	{r4-r5}			@ guardo el valor de r4 y r5 en el stack
+@		movs	r4,#0			@ r4 = 0
+@		movs	r5,#0			@ r5 = 0
+@	loop_prod12:
+@		ldrh	r4,[r0],#2		@ r4=*r0 y luego r0+=2
+@		muls	r4,r3			@ r4*=r3
+@		mov		r5,r4			@ r5=*r4
+@		lsr		r5,#12			@ r5=r5>>12
+@		cbz		r5,carga		@ si r5=0 no hay saturacion y se carga el resultado de la multiplicacion
+@	saturacion:
+@		ldrh	r4,=#0xfff		@ 0x0fff=r4 (saturamos el resultado a 12 bits)
+@	carga:
+@		strh	r4,[r1],#2		@ *r4=r1 y luego r1+=2
+@		subs	r2,1			@ r2-- (decremento el numero de elementos por recorrer)
+@		bne		loop_prod12		@ salta si z=1 debido a que r1=0 (se recorrio el vector)
+@	exit_loop_prod12:
+@		pop		{r4}			@ recupero el valor de r4
+@		bx 		lr				@ retorno de la subrutina
+@-------------------------------------------------------------------------------------------------------------------
+
+@ Prototipo en "C"
+@ static void pack32to16 (int32_t * vectorIn, int16_t *vectorOut, uint32_t longitud);
+@ Parametros recibidos:
+@   r0: dirección de memoria apuntando al primer elemento del vector de entrada
+@   r1: dirección de memoria apuntando al primer elemento del vector de salida
+@	r2: cantidad de elementos del vector (longitud)
+@
+.thumb_func
+	asm_pack32to16:
+		push	{R4}
+		movs	R4,#0
+	loop_pack:
+		ldr		R4,[R0],#4
+		@lsr		R4,#16
+		SXTH 	R4, R4, {,ROR #16}
+		strh	R4,[R1],#2
+		subs	R2,#1
+		bne		loop_pack
+	exit_loop_pack:
+		pop		{R4}
+		bx		lr
+@-------------------------------------------------------------------------------------------------------------------

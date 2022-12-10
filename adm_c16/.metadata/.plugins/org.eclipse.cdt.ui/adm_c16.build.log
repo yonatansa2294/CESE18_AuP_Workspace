@@ -1,0 +1,10 @@
+01:12:26 **** Incremental Build of configuration Debug for project adm_c16 ****
+make -j8 all 
+arm-none-eabi-size   adm_c16.elf 
+   text	   data	    bss	    dec	    hex	filename
+  12972	     60	   3532	  16564	   40b4	adm_c16.elf
+Finished building: default.size.stdout
+ 
+
+01:12:26 Build Finished. 0 errors, 0 warnings. (took 168ms)
+

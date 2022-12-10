@@ -1,0 +1,35 @@
+01:12:24 **** Incremental Build of configuration Debug for project adm_c16 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c:69:10: warning: built-in function 'yn' declared as non-function [-Wbuiltin-declaration-mismatch]
+   69 | int16_t  yn     [NUM_ELEMENTS]={90, 46, -55};
+      |          ^~
+../Core/Src/main.c: In function 'corr':
+../Core/Src/main.c:310:13: warning: variable 'laux' set but not used [-Wunused-but-set-variable]
+  310 |  int16_t  l,laux[NUM_ELEMENTS_CORR],indexL=0;
+      |             ^~~~
+../Core/Src/main.c: In function 'max':
+../Core/Src/main.c:252:1: warning: control reaches end of non-void function [-Wreturn-type]
+  252 | }
+      | ^
+arm-none-eabi-gcc -o "adm_c16.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/jonatan/FIUBA/B2/AuC/adm_c16/STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="adm_c16.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: adm_c16.elf
+ 
+arm-none-eabi-size   adm_c16.elf 
+arm-none-eabi-objdump -h -S  adm_c16.elf  > "adm_c16.list"
+arm-none-eabi-objcopy  -O binary  adm_c16.elf  "adm_c16.bin"
+   text	   data	    bss	    dec	    hex	filename
+  12972	     60	   3532	  16564	   40b4	adm_c16.elf
+Finished building: default.size.stdout
+ 
+Finished building: adm_c16.bin
+ 
+Finished building: adm_c16.list
+ 
+01:12:26 **** Incremental Build of configuration Debug for project adm_c16 ****
+make -j8 all 
+arm-none-eabi-size   adm_c16.elf 
+   text	   data	    bss	    dec	    hex	filename
+  12972	     60	   3532	  16564	   40b4	adm_c16.elf
+Finished building: default.size.stdout
+ 
