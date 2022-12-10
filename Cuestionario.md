@@ -3,7 +3,8 @@
 Preguntas orientadoras
 -----------
 1. Describa brevemente los diferentes perfiles de familias de microprocesadores/microcontroladores de ARM. Explique alguna de sus diferencias características.
-En general podriamos describir los perfiles como sigue:
+
+	En general podriamos describir los perfiles como sigue:
 	* ***Perfil A:*** pensado para trabajar en plataformas de aplicaciones abiertas de alto rendimiento como sistemas operativos Windows, Linux o iOS por mencionar algunos, manteniendo un alto desempeño y eficiencia. Manejan una arquitectura ARMV7 y en algunos casos ARMV8.
 	*  ***Perfil R:*** orientado a la implementación de sistemas embebidos de gama alta en los que es fundamental un rendimiento en tiempo real con baja latencia, alta capacidad de procesamiento y fiabilidad. En este perfil podemos destacar a los ARM Cortex R4/5/7 con una arquitectura ARMV7A/R
 	* ***Perfil M:*** enfocado en cubrir aplicaciones de bajo costo y facil uso; como electronica de consumo o aplicaciones a baja escala, donde se apunta a cumplir requerimientos de eficiencia tanto de procesamiento como energetica, con baja latencia de interrupciones y costo. En este perfil podemos destacar a los ARM Cortex M0/M0+/M3/M4 y M7 con una arquitectura ARMV6/7M.
@@ -17,7 +18,8 @@ La figura 1, muestra los perfiles de ARM.
 Cortex M
 --------------------------------------------------------
 1. Describa brevemente las diferencias entre las familias de procesadores ***Cortex M0, M3 y M4***.
-Podemos describir las diferencias entre los procesadores en mencion mediante la Tabla 1:
+
+	Podemos describir las diferencias entre los procesadores en mención mediante la Tabla 1.
 Tabla 1. Diferencias entre Cortex M0, M3 y M4
 
 |Característica|M0|M3|M4|
@@ -39,62 +41,68 @@ En cuanto al set de instrucciones del ***Cortex M0***, tienen un set de instrucc
 [![Core-ARM-Cortex-M0-M3-M4.jpg](https://i.postimg.cc/nLq1XppH/Core-ARM-Cortex-M0-M3-M4.jpg)](https://postimg.cc/7CYzcv5c)
 
 2. ¿Por qué se dice que el set de instrucciones Thumb permite mayor densidad de código? Explique
-La densidad de código esta asociada con la cantidad de memoria que se necesita para contener instrucciones. Dicho de otra forma es el número de instrucciones que necesito para realizar una operación y la cantidad de memoria que necesito, por lo tanto; mientras menos espacio de memoria ocupe la instrucción y mas operaciones se puedan realizar, el codigo será mas denso. 
 
-Thumb como tal es una compresión del set de instrucciones ARM de 32 bits original en donde es importante la densidad de código.Con Thumb-1, podemos utilizar instrucciones de 16 bits reduciendo el tamaño de código, pero se pierde rendmiento debido a que se tiene que descomprimir las instrucciones de 16 a 32 bits. Por otro lado, Thumb-2 permite combinar instrucciones Thumb de 32 bits y conjuntos de instrucciones Thumb-1 originales de 16 bits. En comparación con el conjunto de instrucciones ARM de 32 bits, el tamaño del código se reduce, mientras se mantiene un rendimiento similar.
+	La densidad de código esta asociada con la cantidad de memoria que se necesita para contener instrucciones. Dicho de otra forma es el número de instrucciones que necesito para realizar una operación y la cantidad de memoria que necesito, por lo tanto; mientras menos espacio de memoria ocupe la instrucción y mas operaciones se puedan realizar, el codigo será mas denso. 
+
+	Thumb como tal es una compresión del set de instrucciones ARM de 32 bits original en donde es importante la densidad de código.Con Thumb-1, podemos utilizar instrucciones de 16 bits reduciendo el tamaño de código, pero se pierde rendmiento debido a que se tiene que descomprimir las instrucciones de 16 a 32 bits. Por otro lado, Thumb-2 permite combinar instrucciones Thumb de 32 bits y conjuntos de instrucciones Thumb-1 originales de 16 bits. En comparación con el conjunto de instrucciones ARM de 32 bits, el tamaño del código se reduce, mientras se mantiene un rendimiento similar.
 
 3. ¿Qué entiende por arquitectura load-store? ¿Qué tipo de instrucciones no posee este tipo de arquitectura?
-La arquitectura *load-store* o de carga-almacenamiento, hace referencia a que el set de instrucciones solamente procesa valores que estén en los registros o directamente especificados dentro de la instrucción en sí misma (valor inmediato), siendo el resultado de la operación guardado en un registro. Las únicas operaciones que se aplican a la memoria son aquellas que copian datos de la memoria en los registros (instrucciones de carga) o copian datos de los registros en la memoria (instrucciones de almacenamiento).
+
+	La arquitectura *load-store* o de carga-almacenamiento, hace referencia a que el set de instrucciones solamente procesa valores que estén en los registros o directamente especificados dentro de la instrucción en sí misma (valor inmediato), siendo el resultado de la operación guardado en un registro. Las únicas operaciones que se aplican a la memoria son aquellas que copian datos de la memoria en los registros (instrucciones de carga) o copian datos de los registros en la memoria (instrucciones de almacenamiento).
 
 4. ¿Cómo es el mapa de memoria de la familia?
-El mapa de memoria se puede describir como un arreglo lineal de bytes numerados desde cero hasta 2<sup>32</sup>-1, haciendo un total de 4GB de almacenamiento. Las palabras están siempre alineadas en bloques de 4 bytes(32 bits), por lo tanto, los 2 bits LSB son cero para mantener la alineación. En algunos procesadores se soporta el acceso no alineado y en otros casos se genera un fallo cuando se produce un acceso no alineado. La Figura 3, describe como se distribuye la memoria para el programa, datos y periféricos.
+
+	El mapa de memoria se puede describir como un arreglo lineal de bytes numerados desde cero hasta 2<sup>32</sup>-1, haciendo un total de 4GB de almacenamiento. Las palabras están siempre alineadas en bloques de 4 bytes(32 bits), por lo tanto, los 2 bits LSB son cero para mantener la alineación. En algunos procesadores se soporta el acceso no alineado y en otros casos se genera un fallo cuando se produce un acceso no alineado. La Figura 3, describe como se distribuye la memoria para el programa, datos y periféricos.
 
 ***Figura 3.*** Mapa de memoria ARM Cortex M3/M4
 
 [![mapa-memoria.png](https://i.postimg.cc/wTnnvr3c/mapa-memoria.png)](https://postimg.cc/ykXLpvmk)
 
 5. ¿Qué ventajas presenta el uso de los “shadowed pointers” del PSP y el MSP?
-El uso del ***Processor Stack Pointer*** (PSP) y el ***Main Stack Pointer*** (MSP), permite la implementación de un RTOS. Para esto se asigna el MSP al sistema operativo y el PSP a cada tarea que se ejecuta, con esto si una tarea de aplicación se encuentra con un problema que lleva a una corrupción de la pila, es probable que la pila utilizada por el núcleo del sistema operativo y otras tareas siga intacta, lo que ayuda a tener un sistema mas confiable.
 
-Cada tarea de aplicación tiene su propio espacio de pila como se muestra en la Figura 4, y el código de cambio de contexto en el OS actualiza la PSP cada vez que se cambia de contexto.
+	El uso del ***Processor Stack Pointer*** (PSP) y el ***Main Stack Pointer*** (MSP), permite la implementación de un RTOS. Para esto se asigna el MSP al sistema operativo y el PSP a cada tarea que se ejecuta, con esto si una tarea de aplicación se encuentra con un problema que lleva a una corrupción de la pila, es probable que la pila utilizada por el núcleo del sistema operativo y otras tareas siga intacta, lo que ayuda a tener un sistema mas confiable.
+
+	Cada tarea de aplicación tiene su propio espacio de pila como se muestra en la Figura 4, y el código de cambio de contexto en el OS actualiza la PSP cada vez que se cambia de contexto.
 
 ***Figura 4.*** Asignación del stack para cada tarea
 
 [![PSP-stack-OS.jpg](https://i.postimg.cc/j2fYyRzs/PSP-stack-OS.jpg)](https://postimg.cc/SYmPhFT5)
 
-6. Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no priviligiado y nuevamente a privilegiado.
-En lo que se refiere a niveles de acceso, se definen dos niveles: 
+6. Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no privilegiado y nuevamente a privilegiado.
+
+	En lo que se refiere a niveles de acceso, se definen dos niveles: 
 	* **Privilegiado:** El nivel de acceso privilegiado puede acceder a todos los recursos del procesador.
 	*  **No privilegiado:** En este nivel algunas regiones de memoria y registros pueden resultar inaccesibles, así como algunas operaciones no pueden ser utilizadas.
 
-En cuanto a los estados se distinguen dos: 
+	En cuanto a los estados se distinguen dos: 
 	* ***Thumb:*** el cual se da cuando el procesador esta ejecutando un programa.
 	* ***debug:*** cuando el procesador detiene la ejecución de las instrucciones para empezar con la depuración.
 
-Finalmente en cuanto a los modos de operación que se dan en el estado normal, describimos los siguientes:
+	Finalmente en cuanto a los modos de operación que se dan en el estado normal, describimos los siguientes:
 	* ***Modo Thread:*** modo ejecutado por defecto al inicio, en el cual se ejecuta el código de forma normal y con acceso privilegiado con la opción de cambiar el acceso a no privilegiado por software. Al entrar en este último nivel de acceso no se puede retornar a un acceso privilegiado salvo se ingrese al modo Handler.
 	* ***Modo Handler:*** modo invocado por al producirse una excepción y siempre cuenta con un nivel de acceso privilegiado. Puede darse cuando el modo Thread cuenta con acceso privilegiado o no privilegiado, pero al retornar; siempre lo hace a un modo Thread con acceso privilegiado.
 
-**Nota:** El **bit [0]** del registro **CONTROL** sirve para seleccionar entre los estados Privilegiado y No Privilegiado durante el modo ***Tread***.
+	**Nota:** El **bit [0]** del registro **CONTROL** sirve para seleccionar entre los estados Privilegiado y No Privilegiado durante el modo ***Tread***.
 
-Ejemplo:  En un RTOS, tanto el OS como las tareas se ejecutan en modo ***Thread*** con la diferencia que el primero lo hace con un acceso privilegiado, mientras que las segundas lo hacen con acceso no privilegiado. Al producirse una interrupción, generalmente producida por el SysTick en la cual se llama al ***scheduler***, que a su vez decide que tarea debe ejecutarse; se cambiar al modo ***Handler*** y al retornar de este, se devolvuelve el acceso privilegiado al OS.
+	Ejemplo:  En un RTOS, tanto el OS como las tareas se ejecutan en modo ***Thread*** con la diferencia que el primero lo hace con un acceso privilegiado, mientras que las segundas lo hacen con acceso no privilegiado. Al producirse una interrupción, generalmente producida por el SysTick en la cual se llama al ***scheduler***, que a su vez decide que tarea debe ejecutarse; se cambiar al modo ***Handler*** y al retornar de este, se devolvuelve el acceso privilegiado al OS.
 
 7. ¿Qué se entiende por modelo de registros ortogonal? Dé un ejemplo
-Un modelo de registros ortogonal implica que todos los registros disponibles para el programador son de propósitos generales, con muy pocas excepciones como por ejemplo el contador de programa, el puntero al stack o el enlazador. La familia ARM dispone de 16 registros de 32 bits, accesibles por el programador detiquetados como R0 hasta R15. Solo 3 registros tienen funciones específicas:
+
+	Un modelo de registros ortogonal implica que todos los registros disponibles para el programador son de propósitos generales, con muy pocas excepciones como por ejemplo el contador de programa, el puntero al stack o el enlazador. La familia ARM dispone de 16 registros de 32 bits, accesibles por el programador detiquetados como R0 hasta R15. Solo 3 registros tienen funciones específicas:
 	* ***R15:*** contador de programa (*Program Counter,PC*). Automáticamente se incrementa en 4 al finalizar cada instrucción (para
 instrucciones de 32-bit), excepto si la instrucción provoca un salto.
 	* ***R14:*** registro de enlace o enlazador (*Link Register,LR*), utilizado para almacenar la dirección de retorno cuando se llama a una subrutina o se genera una excepción.
 	* ***R13:*** puntero al stack (*Stack Pointer,SP*). 
 
-**Nota: **Una instrucción de salto, tal como la llamada a una función, cambia el valor del PC a una dirección específica, y guarda su valor (dirección de retorno) en el Link Register (LR)
+	**Nota:** Una instrucción de salto, tal como la llamada a una función, cambia el valor del PC a una dirección específica, y guarda su valor (dirección de retorno) en el Link Register (LR)
 
-Los cuatro primeros registros R0-R3 se utilizan para pasar los valores de los argumentos a una subrutina y para devolver un valor de resultado
+	Los cuatro primeros registros R0-R3 se utilizan para pasar los valores de los argumentos a una subrutina y para devolver un valor de resultado
 de una función. Adicional a estos registros esta el registro de estado xPSR (Program Status Register). Este registro proporciona información sobre la ejecución del programa y sobre los flags de la ALU y se puede dividir en tres zonas:
 	* Application PSR (APSR): contiene los flags de la ALU N,Z,C,Q,V.
 	* Interrupt PSR (IPSR): contiene los bits que representan el número de subrutina de interrupción que se está ejecutando en un momento dado.
 	* Execution PSR (EPSR): contiene los bits para la inhabilitación de interrupciones normales como de alta prioridad, así como para habilitar el set de instrucciones comprimido (Thumb).
 
-La Figura 5, muestra el significado de cada bit del registro xPSR.
+	La Figura 5, muestra el significado de cada bit del registro xPSR.
 
 ***Figura 5.*** Registros de procesador ARM Cortex M
 
@@ -103,32 +111,34 @@ La Figura 5, muestra el significado de cada bit del registro xPSR.
 Ejemplo: **MOV** PC, #0 ; R15 = 0, salta a la posición 0x00
 
 8. ¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo
-Además de los saltos condicionales, los procesadores  Cortex-M3 y Cortex-M4, permiten colocar las instrucciones condicionales en un bloque de instrucciones IF-THEN (IT), con lo cual se pueden ejecutar hasta 4 instrucciones en bloque.
 
-Un bloque de instrucciones IT consta de una instrucción IT, con detalles de la ejecución condicional, seguida de una a cuatro instrucciones (procesamiento de datos/acceso a memoria) de ejecución condicional, las cuales pueden ejecutarse condicionalmente en función de la condición especificada por la instrucción IT y el valor APSR. 
+	Además de los saltos condicionales, los procesadores  Cortex-M3 y Cortex-M4, permiten colocar las instrucciones condicionales en un bloque de instrucciones IF-THEN (IT), con lo cual se pueden ejecutar hasta 4 instrucciones en bloque.
 
-La última instrucción de ejecución condicional del bloque de IT también puede ser una instrucción de salto condicional. La declaración de la instrucción IT contiene el opcode de la instrucción IT con hasta tres sufijos opcionales de ***"T" (then)*** y ***"E" (else)*** , seguidos de la condición a comprobar, que es la misma que el símbolo de condición para los saltos condicionales.
+	Un bloque de instrucciones IT consta de una instrucción IT, con detalles de la ejecución condicional, seguida de una a cuatro instrucciones (procesamiento de datos/acceso a memoria) de ejecución condicional, las cuales pueden ejecutarse condicionalmente en función de la condición especificada por la instrucción IT y el valor APSR. 
 
-Finalmente, el sufijo "T"/"E" indica cuántas instrucciones subsiguientes hay dentro del bloque de instrucciones IT, y si deben o no ejecutarse si se cumple la condición.
+	La última instrucción de ejecución condicional del bloque de IT también puede ser una instrucción de salto condicional. La declaración de la instrucción IT contiene el opcode de la instrucción IT con hasta tres sufijos opcionales de ***"T" (then)*** y ***"E" (else)*** , seguidos de la condición a comprobar, que es la misma que el símbolo de condición para los saltos condicionales.
+
+	Finalmente, el sufijo "T"/"E" indica cuántas instrucciones subsiguientes hay dentro del bloque de instrucciones IT, y si deben o no ejecutarse si se cumple la condición.
 
 ````
-Ejemplo:
-1 CMP R0, #1 ; Compara R0 con 1
-;ejecucion condicional
-2 ITE	EQ	   ; Ejecuta la instruccion 3 si la condicion es verdadera
-			   ; caso contrario salta a la instruccion 4 
-3 MOVEQ R3, #9 ; R3 = 9 si R0 es igual a 1 (EQ) 
-4 MOVNE R3, #5 ; R3 = 5 si R0 es diferente de 1 (NE)
+	Ejemplo:
+	1 CMP R0, #1 ; Compara R0 con 1
+	;ejecucion condicional
+	2 ITE	EQ	   ; Ejecuta la instruccion 3 si la condicion es verdadera
+				   ; caso contrario salta a la instruccion 4 
+	3 MOVEQ R3, #9 ; R3 = 9 si R0 es igual a 1 (EQ) 
+	4 MOVNE R3, #5 ; R3 = 5 si R0 es diferente de 1 (NE)
 ```` 
 9. Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).
-Las excepciones son eventos que ocasionan cambios en el flujo de programa. Cuando ocurre una excepcion, el procesador suspende la ejecución actual de las tareas y ejecuta otro código que se encarga de atender la excepcion, llamado manejador de excepciones. Al finalizar, el procesador retoma la ejecuciòn normal del programa.
+
+	Las excepciones son eventos que ocasionan cambios en el flujo de programa. Cuando ocurre una excepcion, el procesador suspende la ejecución actual de las tareas y ejecuta otro código que se encarga de atender la excepcion, llamado manejador de excepciones. Al finalizar, el procesador retoma la ejecuciòn normal del programa.
 	* ***Reset:*** se produce cuando el procesador inicia, por un reset en caliente (durante la ejecución) o por una caida en el nivel de alimentación por debajo de un valor especificado como mínimo para el correcto funcionamiento del procesador (*brown-out reset*). 
 	* ***NMI (NonMaskable Interrupt):*** esta excepción puede ser ocasionada por un periférico o por software. Esta es la excepción de mayor prioridad despues del reset. Está permanentemente habilitado y tiene una prioridad fija de -2. Los NMI no pueden ser: 
 		* enmascarado o impedido de activación por cualquier otra excepción.
 		* reemplazada por cualquier excepción que no sea reset.
 	* ***Hardfault:*** las excepciones de fallo detectan los accesos ilegales a la memoria y el funcionamiento incorrecto del programa. Esta excepción se produce debido a un error durante el procesamiento de la excepción o porque ningún otro mecanismo de excepción puede gestionarla.
 
-La Tabla 2, presenta el nivel de prioridad de estos tres tipos de excepción. 
+	La Tabla 2, presenta el nivel de prioridad de estos tres tipos de excepción. 
 	
 |Número de excepción|Número de IRQ|Tipo|Prioridad|Activación|
 |:-------------|:-:|:-:|:-:|:-:|
@@ -136,28 +146,40 @@ La Tabla 2, presenta el nivel de prioridad de estos tres tipos de excepción.
 |2|-14|NMI|2|Asincrona|
 |3|-13|Hardfault|1|-|
 10. Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?
+
+	La pila es un tipo de mecanismo de uso de memoria que permite utilizar una porción de memoria como búfer de almacenamiento de datos de último en entrar, primero en salir. Cuando se realiza una llamada a una función/subrutina se hace uso de las instrucciones PUSH y POP para guardar el contenido de los bancos de registros . Al principio de la llamada a la función, el contenido de algunos de los registros puede guardarse en la pila mediante la instrucción PUSH, y luego restaurarse a sus valores originales al final de la función mediante la instrucción POP. De esta forma, el código del programa que llamó a la función no perderá ningún dato y podrá seguir ejecutar.
 11. Describa la secuencia de reset del microprocesador.
-Cuando se produce un reset el procesador detiene la ejecución del programa sin importar la instrucción. Al desaparecer el reset, se reinicia la ejecución en la dirección especificada por el reset en la tabla de vectores, con nivel privilegiado y modo *Thread*. 
+
+	Cuando se produce un reset el procesador detiene la ejecución del programa sin importar la instrucción. Al desaparecer el reset, se reinicia la ejecución en la dirección especificada por el reset en la tabla de vectores, con nivel privilegiado y modo *Thread*. 
 12. ¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?
 13. ¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo
 14. ¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?
+
+	CMSIS  o Interfaz de software estándar para microcontroladores Cortex (*Cortex Microcontroller Software Interface Standard*),  es un conjunto de herramientas, API, marcos y flujos de trabajo de código abierto proporcionada por ARM de forma gratuita bajo la licencia Apache 2.0. Entre las ventajas principales podemos mencionar que ayudan a simplificar la reutilización del software, con el fin de acelerar la creación y depuración de proyectos y, por lo tanto, lograr una reducción en el tiempo de comercialización de nuevas aplicaciones. La Figura 6, muestra la organización del Core CMSIS
+	
+***Figura 6.*** Estructura del CMSIS
+[![CMSIS.png](https://i.postimg.cc/pTwqnKmB/CMSIS.png)](https://postimg.cc/TLcrzLqy)
 15. Cuando ocurre una interrupción, asumiendo que está habilitada ¿Cómo opera el microprocesador para atender a la subrutina correspondiente? Explique con un ejemplo
 16. ¿Cómo cambia la operación de stacking al utilizar la unidad de punto flotante?
 17. Explique las características avanzadas de atención a interrupciones: tail chaining y late arrival.
 18. ¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?
-Es un temporizador de proposito general presente en todos los procesadores Cortex que opera en modo descendente con una opcion de auto recarga tal cual se muestra en la FIgura 6. Cuenta con una resolución de 24 bits y por defecto la fuente de reloj utilizada por el Systick es el clock de la CPU utilizada por el procesador. 
 
-***Figura 6.*** Temporizador Systick
+	Es un temporizador de proposito general presente en todos los procesadores Cortex que opera en modo descendente con una opcion de auto recarga tal cual se muestra en la FIgura 7. Cuenta con una resolución de 24 bits y por defecto la fuente de reloj utilizada por el Systick es el clock de la CPU utilizada por el procesador. 
+
+***Figura 7.*** Temporizador Systick
 
 [![systick.png](https://i.postimg.cc/wjCj1xnj/systick.png)](https://postimg.cc/mPSsq4bv)
 
-Una vez iniciado el temporizador con cada clock descuenta en 1 desde su valor inicial, una vez que llegue a cero genera una interrupción y se cargará un nuevo valor de cuenta desde el registro de recarga. El propósito principal de este temporizador es generar una interrupción periódica para un sistema operativo en tiempo real (RTOS) para la llamada al sheduler o algún otro software manejado por eventos. En caso no se ejecute un RTOS, también se utilizar como un simple periférico de temporizador.
+	Una vez iniciado el temporizador con cada clock descuenta en 1 desde su valor inicial, una vez que llegue a cero genera una interrupción y se cargará un nuevo valor de cuenta desde el registro de recarga. El propósito principal de este temporizador es generar una interrupción periódica para un sistema operativo en tiempo real (RTOS) para la llamada al sheduler o algún otro software manejado por eventos. En caso no se ejecute un RTOS, también se utilizar como un simple periférico de temporizador.
 
-Tener en cuenta lo siguiente:
+	Tener en cuenta lo siguiente:
 	* Cuando el procesador se detiene para la depuración, el contador no disminuye.
 	* El acceso a los cuatro registros que tiene el temporizador requieren un modo privilegiado. 
 
 19. ¿Qué funciones cumple la unidad de protección de memoria (MPU)?
+
+	La MPU o Unidad de Protección de Memoria (*Memory Proteccion Unit*), es la encarga de configurar los permisos necesarios  para acceder a la memoria, adicionales a los que ya vienen configurados de forma predeterminada. Con esto se garantiza que los programas de usuario que se ejecutan en modo no privilegiados, no puedan acceder a los espacios de memoria de control del sistema.
+	**Nota:** Cuando se bloquea un acceso sin privilegios, se produce inmediatamente la excepción de fallo, pudiendo ser una excepción HardFault o BusFault.
 20. ¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?
 21. ¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo
 22. ¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.
@@ -165,11 +187,11 @@ Tener en cuenta lo siguiente:
 ISA
 -------
 1. ¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo
-Los sufijos acompañan a algunas instrucciones y el efecto que tienen sobre la instruccion depende precisamente del tipo de sufijo utilizado.
-Podemos mencionar los sufijos para las instrucciones de procesamiento de datos, de acceso a memoria y las del tipo condicional.
+	
+	Los sufijos acompañan a algunas instrucciones y el efecto que tienen sobre la instruccion depende precisamente del tipo de sufijo utilizado. Podemos mencionar los sufijos para las instrucciones de procesamiento de datos, de acceso a memoria y las del tipo condicional.
 Para la instrucciones de acceso a memoria (***load*** y ***store***) tenemos los sufijos que indican el tamaño del dato a manipular.
-Por otro lado, para las instrucciones condicionales debemos mencionar que los procesadores Cortex-M3 y Cortex-M4 admiten los saltos condicionales. Actualizando el registro de estado **APSR** mediante operaciones de datos, o instrucciones como test (TST) o comparar (CMP), se puede controlar el flujo del programa en base al resultado de las operaciones. 
-Las Tablas 3 y 4 muestran los sufijos para las instrucciones condicionales y para las de acceso a memoria.
+
+	Por otro lado, para las instrucciones condicionales debemos mencionar que los procesadores Cortex-M3 y Cortex-M4 admiten los saltos condicionales. Actualizando el registro de estado **APSR** mediante operaciones de datos, o instrucciones como test (TST) o comparar (CMP), se puede controlar el flujo del programa en base al resultado de las operaciones.  Las Tablas 3 y 4 muestran los sufijos para las instrucciones condicionales y para las de acceso a memoria.
 
 Tabla 3. Sufijos de tamaño para instrucciones de acceso a memoria.
 
@@ -203,9 +225,15 @@ Tabla 4. Sufijos para instrucciones condicionales.
 |AL|Valor por defecto|Algun valor|
 
 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo
-El sufijo *** "s"*** es utilizado por las instrucciones orientadas al procesamiento de los datos, permitiendo ademas de ejecutar la operación de la instrucción, actualizar los bits o flags del registro de estado **APSR**.
+
+	El sufijo *** "s"*** es utilizado por las instrucciones orientadas al procesamiento de los datos, permitiendo ademas de ejecutar la operación de la instrucción, actualizar los bits o flags del registro de estado **APSR**.
 ````Ejemplo: ADDS R0, R1;  R0=(R0)+(R1) y actualiza el registro APSR ````
 
 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
+
+	Los cuatro primeros registros r0-r3 (a1-a4) se utilizan para pasar valores de argumento a una subrutina y para devolver un valor de resultado de una función. También pueden utilizarse para mantener valores intermedios dentro de una rutina (pero, en general, sólo entre llamadas a subrutinas).
+	Normalmente, los registros r4-r8, r10 y r11 (v1-v5, v7 y v8) se utilizan para guardar los valores de las variables locales de una rutina. Una subrutina debe conservar el contenido de los registros r4-r8, r10, r11 y SP (y r9 en las variantes PCS que designan a r9 como v6).
 5. ¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.
+
+
