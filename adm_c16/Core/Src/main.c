@@ -36,8 +36,8 @@
 #define SHIFT_12BITS		12
 #define MAX_VALUE_12BITS	0x0FFF
 #define NUM_ELEMENTS		10
-#define NUM_ELEMENTS_X		5
-#define NUM_ELEMENTS_Y		5
+#define NUM_ELEMENTS_X		10
+#define NUM_ELEMENTS_Y		10
 #define NUM_ELEMENTS_CORR	(NUM_ELEMENTS_X>NUM_ELEMENTS_Y)?(NUM_ELEMENTS_X*2-1):(NUM_ELEMENTS_Y*2-1)
 #define ESCALAR				25
 #define NUM_SAMPLES_DISCARD	3
@@ -62,15 +62,15 @@ UART_HandleTypeDef huart3;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-uint32_t u32vectorIn  [NUM_ELEMENTS]={22, 9, 4};
+uint32_t u32vectorIn  [NUM_ELEMENTS]={2235, 987, 41, 313, 894, 22, 9, 2294, 1024, 723};
 uint32_t u32vectorOut [NUM_ELEMENTS];
 uint16_t u16vectorIn  [NUM_ELEMENTS]={250, 9, 32, 4, 5010, 6782, 711, 878, 9230, 1150};
 uint16_t u16vectorOut [NUM_ELEMENTS];
 int32_t  s32vectorIn  [NUM_ELEMENTS]={71251, -32817, 1521, 278, 85039, 2294, -2154, 97851, 963, -15230};
 int32_t  s32vectorOut [NUM_ELEMENTS];
 int16_t  s16vectorOut [NUM_ELEMENTS];
-int16_t  x_n 		  [NUM_ELEMENTS_X]={1, -2, -3, 4, 5};
-int16_t  y_n 		  [NUM_ELEMENTS_Y]={2, -4, 5, 0, 0};
+int16_t  x_n 		  [NUM_ELEMENTS_X]={1, -2, -3, 4, 5, -8, 25, 175, -11, 9};
+int16_t  y_n 		  [NUM_ELEMENTS_Y]={2, -4, 5, 7, 9, 1, -8, 75, -132, 160};
 int16_t  vectorCorr	  [NUM_ELEMENTS_CORR];
 /* USER CODE END PV */
 
