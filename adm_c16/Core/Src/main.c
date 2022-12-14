@@ -20,6 +20,7 @@
 #include "main.h"
 #include "string.h"
 #include "stddef.h"
+#include "stdio.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "asm_func.h"
@@ -69,7 +70,7 @@ int32_t  s32vectorIn  [NUM_ELEMENTS]={71251, -32817, 1521, 278, 85039, 2294, -21
 int32_t  s32vectorOut [NUM_ELEMENTS];
 int16_t  s16vectorOut [NUM_ELEMENTS];
 int16_t  x_n 		  [NUM_ELEMENTS_X]={1, -2, -3, 4, 5};
-int16_t  y_n 		  [NUM_ELEMENTS_Y]={2, -4, 5};
+int16_t  y_n 		  [NUM_ELEMENTS_Y]={2, -4, 5, 0, 0};
 int16_t  vectorCorr	  [NUM_ELEMENTS_CORR];
 /* USER CODE END PV */
 
@@ -91,6 +92,18 @@ void invertir (uint16_t * vector, uint32_t longitud);
 void corr (int16_t * vectorXn, int16_t * vectorYn, int16_t * vectorCorr, uint32_t longitud);
 
 /* USER CODE BEGIN PFP */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
+
 /*
  * @brief	Initializes a vector with zero values
  * @param	Pointer to vector of type uint32_t
@@ -175,8 +188,10 @@ void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t long
 				for(i=0;i<longitud;i++)
 				{
 					*vectorOut++ = *vectorIn++ * escalar;
-					if((*vectorOut >>SHIFT_12BITS)>0)
-						*vectorOut = MAX_VALUE_12BITS;
+					if((*(vectorOut-1) >>SHIFT_12BITS)>0)
+						*(vectorOut-1) = MAX_VALUE_12BITS;
+//					vectorIn++;
+//					vectorOut++;
 				}
 			else
 				memset(&vectorOut,0,longitud);
@@ -410,7 +425,8 @@ static void PrivilegiosSVC (void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	uint8_t pData[20];
+	memset(&pData,0,sizeof(pData));
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -426,6 +442,8 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  // Activa contador de ciclos (iniciar una sola vez)
+  DWT->CTRL |= 1 << DWT_CTRL_CYCCNTENA_Pos;
 
   /* USER CODE END SysInit */
 
@@ -437,46 +455,70 @@ int main(void)
   /* USER CODE BEGIN 2 */
   PrivilegiosSVC ();
 
-  //const uint32_t Resultado = asm_sum (5, 3);
+  const uint32_t Resultado = asm_sum (5, 3);
 
   /* Test de ejercicio 1 */
-//  zeros (&u32vectorIn[0], sizeof(u32vectorIn)/sizeof(u32vectorIn[0]));
-//  asm_zeros(&u32vectorIn[0], sizeof(u32vectorIn)/sizeof(u32vectorIn[0]));
+  zeros (&u32vectorIn[0], sizeof(u32vectorIn)/sizeof(u32vectorIn[0]));
+  asm_zeros(&u32vectorIn[0], sizeof(u32vectorIn)/sizeof(u32vectorIn[0]));
 
   /* Test de ejecicio 2 */
-//  productoEscalar32 (&u32vectorIn[0], &u32vectorOut[0], sizeof(u32vectorIn)/sizeof(u32vectorIn[0]), ESCALAR);
-//  asm_productoEscalar32 (&u32vectorIn[0], &u32vectorOut[0],sizeof(u32vectorIn)/sizeof(u32vectorIn[0]), ESCALAR);
+  productoEscalar32 (&u32vectorIn[0], &u32vectorOut[0], sizeof(u32vectorIn)/sizeof(u32vectorIn[0]), ESCALAR);
+  asm_productoEscalar32 (&u32vectorIn[0], &u32vectorOut[0],sizeof(u32vectorIn)/sizeof(u32vectorIn[0]), ESCALAR);
 
   /* Test de ejecicio 3 */
-//  productoEscalar16 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
-//  asm_productoEscalar16 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
+  productoEscalar16 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
+  asm_productoEscalar16 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
 
   /* Test de ejecicio 4 */
-//  productoEscalar12 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
-//  asm_productoEscalar12 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
+  DWT->CYCCNT = 0;
+  productoEscalar12 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
+  const volatile uint32_t ciclos_ex4c = DWT->CYCCNT;
+
+  DWT->CYCCNT = 0;
+  asm_productoEscalar12 (&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]), ESCALAR);
+  const volatile uint32_t ciclos_ex4asm = DWT->CYCCNT;
 
   /* Test de ejecicio 5 */
-//  asm_filtroVentana10(&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
-//  filtroVentana10(&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
+  DWT->CYCCNT = 0;
+  filtroVentana10(&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
+  const volatile uint32_t ciclos_ex5c = DWT->CYCCNT;
+
+  DWT->CYCCNT = 0;
+  asm_filtroVentana10(&u16vectorIn[0], &u16vectorOut[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
+  const volatile uint32_t ciclos_ex5asm = DWT->CYCCNT;
 
   /* Test de ejecicio 6 */
-//  pack32to16(&s32vectorIn[0], &s16vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
-//  asm_pack32to16(&s32vectorIn[0], &s16vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
+  pack32to16(&s32vectorIn[0], &s16vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
+  asm_pack32to16(&s32vectorIn[0], &s16vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
 
   /* Test de ejecicio 7 */
-//  int32_t indexMaxValueASM =  asm_max(&s32vectorIn[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
-//  int32_t indexMaxValue = max(&s32vectorIn[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
+  int32_t indexMaxValueASM =  asm_max(&s32vectorIn[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
+  int32_t indexMaxValue = max(&s32vectorIn[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]));
 
   /* Test de ejecicio 8 */
-//  asm_downsampleM (&s32vectorIn[0], &s32vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]), NUM_SAMPLES_DISCARD);
-//  downsampleM (&s32vectorIn[0], &s32vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]), NUM_SAMPLES_DISCARD);
+  asm_downsampleM (&s32vectorIn[0], &s32vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]), NUM_SAMPLES_DISCARD);
+  downsampleM (&s32vectorIn[0], &s32vectorOut[0], sizeof(s32vectorIn)/sizeof(s32vectorIn[0]), NUM_SAMPLES_DISCARD);
 
   /* Test de ejecicio 9 */
-//  asm_invertir (&u16vectorIn[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
-//  invertir (&u16vectorIn[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
+  asm_invertir (&u16vectorIn[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
+  invertir (&u16vectorIn[0], sizeof(u16vectorIn)/sizeof(u16vectorIn[0]));
 
   /* Test de ejercicio 11*/
-//  corr (&x_n[0],&y_n[0], &vectorCorr[0], sizeof(xn)/sizeof(xn[0]));
+  DWT->CYCCNT = 0;
+  corr (&x_n[0],&y_n[0], &vectorCorr[0], sizeof(x_n)/sizeof(x_n[0]));
+  const volatile uint32_t ciclos_ex11c = DWT->CYCCNT;
+
+  DWT->CYCCNT = 0;
+  asm_corr (&x_n[0],&y_n[0], &vectorCorr[0], sizeof(x_n)/sizeof(x_n[0]));
+  const volatile uint32_t ciclos_ex11asm = DWT->CYCCNT;
+
+  printf("Ex4 C:%lu\r\n",ciclos_ex4c);
+  printf("Ex4 ASM:%lu\r\n",ciclos_ex4asm);
+  printf("Ex5 C:%lu\r\n",ciclos_ex5c);
+  printf("Ex5 ASM:%lu\r\n",ciclos_ex5asm);
+  printf("Ex11 C:%lu\r\n",ciclos_ex11c);
+  printf("Ex11 C:%lu\r\n",ciclos_ex11asm);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

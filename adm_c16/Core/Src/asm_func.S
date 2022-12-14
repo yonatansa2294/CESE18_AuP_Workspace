@@ -318,4 +318,51 @@
 	exit_loop_invertir:
 		push	{R4-R8}				@ recupero los valores de R4-R8
 		bx		lr					@ retorno de la subrutina
+@-------------------------------------------------------------------------------------------------------------------
 
+@ Prototipo en "C"
+@ corr (int16_t * vectorXn, int16_t * vectorYn, int16_t * vectorCorr, uint32_t longitud)
+@ Parametros recibidos:
+@   r0: dirección de memoria apuntando al primer elemento del vector de la señal Xn
+@	r1: dirección de memoria apuntando al primer elemento del vector de la señal Yn
+@	r2: direccion del vector de correlación
+@	r3: cantidad de elementos del vector (longitud)
+@
+.thumb_func
+	asm_corr:
+		push	{R4-R9}
+		movs	R4,#1				@ delay
+		movs	R6,#0				@ index de vector x
+		movs	R7,#0				@ index de vector y
+		movs	R8,#1
+		movs	R9,#0
+		mls		R4,R3,R8,R4			@ r4 = r3*r8+r4 -> delay = 1-longitud = delay_max
+	loop_delay:
+		cmp		R4,R3				@ delay < longitud?
+		bGT		exit_loop_corr		@ si es mayor, ha terminado la correlación
+		movs	R5,#0				@ suma acum = 0
+		movs	R6,#0				@ indexX = 0
+	loop_sum_prod:
+		cmp		R6,R3				@ indexX > longitud
+		bGE		save_value			@ si es mayor, se ha calculado xn*yn para el primer shift de y[n]
+		adds	R7,R6,R4			@ actualizo indexY
+		cmp		R7,#0				@ r7 < 0?
+		bLT		next_iter_sum_prod	@ si es menor, saltamos a la siguiente iteracion al no estar definidos y[n+L]
+	sum_prod:
+		cmp		R7,R3				@ r7 > longitud?
+		bGT		next_iter_sum_prod	@ si es mayor, saltamos a la siguiente iteración
+		ldrh	R8,[R0,R7,LSL 1]	@ r8 = *(r0+(r7<<1) -> r8= x[n+indexY]
+		sxth	R8,R8				@ r8=(int16)(*r8)
+		ldrh	R9,[R1,R6,LSL 1]	@ r9 = *(r1+(r6<<1) -> r9= y[n+indexX]
+		sxth	R9,R9				@ @ r8=(int16)(*r8)
+		smlabb	R5,R8,R9,R5			@ r5 = r5 + r8[15:0]*r9[15:0]
+	next_iter_sum_prod:
+		adds	R6,#1				@ indexX++
+		b		loop_sum_prod
+	save_value:
+		strh	R5,[R2],#2			@ *r5=r2, luego r2+=2
+		adds	R4,#1				@ delay++
+		b		loop_delay
+	exit_loop_corr:
+		pop		{R4-R9}				@ recuperamos los registros r4-r9
+		bx		lr					@ retorno de la subrutina
